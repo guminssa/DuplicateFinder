@@ -1,0 +1,20 @@
+Use cases:
+	User can select multiple directories.  Results show total number of copies of each unique file within those directories.
+	Provide the option to display all files, or just those with duplicates.
+	User can export the MD5 sums and filesystem locations of all unique files in CSV format.
+	For each unique file, the user is presented with a list of all of the copies and the option to delete them.
+	User should be informed if one directory is a full copy or a subset of another.
+	Provide the option to delete all files within a directory that have duplicates elsewhere.
+	Provide option to display the directory containing the specified duplicate.
+
+Interface:
+	File view (QTableView)
+		MD5
+		File size
+		Paths
+	Directory view
+
+
+Data structures:
+	For each directory, record total number of files, and the number that have local duplicates, duplicates elsewhere, and are fully unique.
+	For each directory, maintain a list of other directories that contain duplicates
