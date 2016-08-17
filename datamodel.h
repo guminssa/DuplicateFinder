@@ -17,9 +17,14 @@ class DataModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
+
+    // Constructors/destructors
     DataModel(QObject *parent = nullptr);
     DataModel(QString baseDir, bool recurse=false, QObject *parent = nullptr);
     ~DataModel();
+
+
+    // Qt Model interface
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(QModelIndex const& index, int /*role = Qt::DisplayRole*/) const;
@@ -27,17 +32,19 @@ public:
                       QModelIndex const&) const;
     QModelIndex parent(QModelIndex const&) const;
     static DataItem *itemFromIndex(const QModelIndex &index);
-
-    bool addPath(QString &baseDir, bool recurse, DataItem *parent=nullptr);
-
-    bool pathAlreadyAdded(const QString &path);
-    bool addItem(DataItem *);
-
-
     // For editing
     //bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
     //Qt::ItemFlags flags(const QModelIndex & index) const;
     //void byIndexValid(QString pos);
+
+
+    // Data manipulation
+    bool addPath(QString &baseDir, bool recurse, DataItem *parent=nullptr);
+    bool pathAlreadyAdded(const QString &path);
+
+
+
+
 
 private:
     DataItem *rootItem;

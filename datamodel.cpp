@@ -78,6 +78,8 @@ DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
         QString hash = newItem->getHash();
         if ( hashes.contains(hash) ) // If another DataItem has the same hash...
         {
+            newItem->duplicateFiles = new QList<DataItem *>; // Create a list to store the duplicates
+
             QMap<QString, DataItem *>::iterator matches = hashes.find(hash);
             while ( matches != hashes.end() && (*matches)->getHash() == hash )
             {
@@ -85,6 +87,7 @@ DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
                 // point to each other.
                 qDebug() << "New file " << newItem->path << " matches existing file " << (*matches)->path;
                 qDebug() << "New hash=" << newItem->getHash() << " existing hash=" << (*matches)->getHash();
+                newItem->markDuplicate(*matches);
                 matches++;
             }
         }

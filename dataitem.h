@@ -20,7 +20,7 @@ public:
     DataItem(const QString &filePath, DataItem *parent);
     //bool isRecursive();
     QString &getHash();
-    const QStringList &getSimilarDirs(); // Other dirs that contain duplicates of the files in this item
+    const QList<DataItem *> *getSimilarDirs(); // Other dirs that contain duplicates of the files in this item
     bool addSimilarDir(DataItem *otherItem);
     QStringList &listDuplicates(const QString &path); // List all files in path that are duplicates of this item's files
     bool markDuplicate(DataItem *otherItem);
@@ -37,12 +37,13 @@ private:
 
     // Only populated if this item is a directory
     QVector<DataItem *> *fileChildren, *dirChildren;
-    QStringList similarDirs;
-    QDir *dirInfo; // Only populated for directories, not files
+    QList<DataItem *> *similarDirs;
+    QDir *dirInfo;
     bool isRecursive;
 
     // Only populated if this item is a file
     QString hash;  // Only populated for files, not directories
+    QList<DataItem *> *duplicateFiles;
 
     // Only takes action when item is a file
     bool calculateHash();

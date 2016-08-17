@@ -50,6 +50,8 @@ DataItem::DataItem(const QString &filePath, DataItem *parent=nullptr)
         fileInfo = nullptr;
         dirInfo = nullptr;
     }
+    similarDirs = nullptr;
+    duplicateFiles = nullptr;
 
     qDebug() << "Created new DataItem for path " + path + ".";
 }
@@ -106,26 +108,32 @@ bool DataItem::addSimilarDir(DataItem *otherItem)
 {
     if ( fileInfo->isDir() && otherItem->fileInfo->isDir() )
     {
+        if (this->similarDirs == nullptr) { this->similarDirs = new QList<DataItem *>; }
+        if (otherItem->similarDirs == nullptr) { otherItem->similarDirs = new QList<DataItem *>; }
+
         // Set the dirs to point to each other
-        if ( !similarDirs.contains(otherItem->path, Qt::CaseInsensitive) )
+        if ( !similarDirs->contains(otherItem) )
         {
-            similarDirs.append(otherItem->path);
+            similarDirs->append(otherItem);
         }
-        if ( !otherItem->similarDirs.contains(path, Qt::CaseInsensitive) )
+        if ( !otherItem->similarDirs->contains(this) )
         {
-            otherItem->similarDirs.append(path);
+            otherItem->similarDirs->append(this);
         }
     }
     else if ( fileInfo->isFile() && otherItem->fileInfo->isFile() )
     {
+        if (this->parentItem->similarDirs == nullptr) { this->parentItem->similarDirs = new QList<DataItem *>; }
+        if (otherItem->parentItem->similarDirs == nullptr) { otherItem->parentItem->similarDirs = new QList<DataItem *>; }
+
         // Update the parent directories instead
-        if ( !parentItem->similarDirs.contains(otherItem->parentItem->path, Qt::CaseInsensitive) )
+        if ( !parentItem->similarDirs->contains(otherItem->parentItem) )
         {
-            parentItem->similarDirs.append(otherItem->parentItem->path);
+            parentItem->similarDirs->append(otherItem->parentItem);
         }
-        if ( !otherItem->similarDirs.contains(path, Qt::CaseInsensitive) )
+        if ( !otherItem->parentItem->similarDirs->contains(this->parentItem) )
         {
-            otherItem->similarDirs.append(path);
+            otherItem->parentItem->similarDirs->append(this->parentItem);
         }
     }
     else
@@ -136,18 +144,28 @@ bool DataItem::addSimilarDir(DataItem *otherItem)
     return true;
 }
 
-const QStringList &DataItem::getSimilarDirs()
+const QList<DataItem *> *DataItem::getSimilarDirs()
 {
     return similarDirs;
 }
 
 bool DataItem::markDuplicate(DataItem *otherItem)
 {
-    if ( otherItem == nullptr )
+    if ( otherItem == nullptr || fileInfo->isDir() || otherItem->fileInfo->isDir() )
         return false;
 
+    if (this->duplicateFiles == nullptr) { this->duplicateFiles = new QList<DataItem *>; }
+    if (otherItem->duplicateFiles == nullptr) { otherItem->duplicateFiles = new QList<DataItem *>; }
 
-    return false; // TODO
+    if ( !this->duplicateFiles->contains(otherItem) )
+    {
+        this->duplicateFiles->append(otherItem);
+        otherItem->duplicateFiles->append(this);
+    }
+
+    addSimilarDir(otherItem);
+
+    return true;
 }
 
 int DataItem::numDirChildren()
