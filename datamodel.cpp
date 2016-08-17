@@ -11,6 +11,7 @@ DataModel::DataModel(QString baseDir, bool recurse, QObject *parent) : QAbstract
 {
 
     rootItem = new DataItem(QString(""), nullptr);
+    // TODO: Create model index
 
     addPath(baseDir, recurse);
 }
@@ -40,9 +41,7 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
 
 
     // Create new DataItem to represent the specified baseDir
-    // DataItem *newItem = new DataItem(baseDir, parent);
     DataItem *newItem = createDataItem(baseDir, parent);
-    //hashes.insert(newItem->getHash(), newItem);
 
 
     if ( recurse )
@@ -53,13 +52,8 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
         qDebug() << newItem->path << " has " << childFiles.count() << " child files";
         for (QList<QString>::iterator it = childFiles.begin(); it != childFiles.end(); it++)
         {
-            qDebug() << "Recursing down to child file " << (*it);
-
             QString newPath = newItem->path + QDir::separator() + (*it); // Prepend the dirname
-            //DataItem *newChildItem = new DataItem(newPath, newItem); // Create a DataItem for the child file
-            createDataItem(newPath, newItem);
-
-            //hashes.insert(hash, newChildItem);
+            createDataItem(newPath, newItem); // Create a DataItem for the child file
         }
     }
 
@@ -110,7 +104,6 @@ bool DataModel::pathAlreadyAdded(const QString &path)
     int count = 1;
     if ( rootItem->dirChildren == nullptr )
     {
-        qDebug() << "rootItem has no children";
         return false;
     }
 
