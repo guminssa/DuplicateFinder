@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     //QModelIndex indexA, indexB, indexBChild, rootIndex;
     //bool rc;
-    DataModel model(QString("/home/steve"), true);
+    DataModel model(QString("/home/steve/testdata"), true);
     model.debugDuplicates();
 
     ui->setupUi(this);
