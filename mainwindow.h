@@ -2,6 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTreeView>
+#include <QStandardItemModel>
+#include <QMessageBox>
+#include "datamodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +21,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    //QStandardItemModel *model;
+    DataModel *model;
 };
 
 #endif // MAINWINDOW_H
