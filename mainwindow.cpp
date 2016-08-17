@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //QModelIndex indexA, indexB, indexBChild, rootIndex;
     //bool rc;
     DataModel model(QString("/home/steve"), true);
+    model.debugDuplicates();
 
     ui->setupUi(this);
 

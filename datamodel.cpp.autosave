@@ -49,7 +49,6 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
 
         // Create a DataItem for each file in the new directory
         QStringList childFiles = newItem->dirInfo->entryList(QDir::Files);
-        qDebug() << newItem->path << " has " << childFiles.count() << " child files";
         for (QList<QString>::iterator it = childFiles.begin(); it != childFiles.end(); it++)
         {
             QString newPath = newItem->path + QDir::separator() + (*it); // Prepend the dirname
@@ -85,8 +84,6 @@ DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
             {
                 // For each DataItem in the master hash list with this hash, update them to
                 // point to each other.
-                qDebug() << "New file " << newItem->path << " matches existing file " << (*matches)->path;
-                qDebug() << "New hash=" << newItem->getHash() << " existing hash=" << (*matches)->getHash();
                 newItem->markDuplicate(*matches);
                 matches++;
             }
