@@ -10,6 +10,7 @@
 #include <QByteArray>
 #include <QException>
 #include <QDebug>
+#include <QModelIndex>
 #include <exception>
 
 #define DEFAULT_TOP_LEVEL_DIR_COUNT 5
@@ -17,23 +18,36 @@
 class DataItem
 {
 public:
+    // Constructors/destructors
     DataItem(const QString &filePath, DataItem *parent);
-    //bool isRecursive();
+
+
+    // Qt Model interface
+    bool setModelIndex(const QModelIndex &index);
+
+
+    // Data manipulation
     QString &getHash();
     const QList<DataItem *> *getSimilarDirs(); // Other dirs that contain duplicates of the files in this item
     bool addSimilarDir(DataItem *otherItem);
     QStringList &listDuplicates(const QString &path); // List all files in path that are duplicates of this item's files
     bool markDuplicate(DataItem *otherItem);
-    bool setModelIndex(const QModelIndex &index);
     bool addChildItem(DataItem *child);
 
 
+
 private:
+
+    // Qt Model interface
+    QModelIndex modelIndex;
+
+
+    // Data manipulation
+
     DataItem *parentItem;
     QString path;
-    //QString parentDirname;
-    //QModelIndex modelIndex;
     QFileInfo *fileInfo;
+
 
     // Only populated if this item is a directory
     QVector<DataItem *> *fileChildren, *dirChildren;

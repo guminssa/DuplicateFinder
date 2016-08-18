@@ -28,8 +28,9 @@ public:
     int rowCount(const QModelIndex &parent) const;
     int columnCount(const QModelIndex &parent) const;
     QVariant data(QModelIndex const& index, int /*role = Qt::DisplayRole*/) const;
-    QModelIndex index(int /*row*/, int /*column*/,
-                      QModelIndex const&) const;
+    QModelIndex index(int row, int column,
+                      const QModelIndex &parent) const;
+
     QModelIndex parent(QModelIndex const&) const;
     static DataItem *itemFromIndex(const QModelIndex &index);
     // For editing
