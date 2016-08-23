@@ -6,15 +6,14 @@
 //
 //******************************************************************
 
-DataModel::DataModel(QObject *parent) : QAbstractTableModel(parent)
+DataModel::DataModel(QObject *parent) : QAbstractItemModel(parent)
 {
     rootItem = new DataItem(QString("Root"), nullptr);
-    // TODO: Create model index
     rootItem->modelIndex = QModelIndex();
 }
 
 
-DataModel::DataModel(QString baseDir, bool recurse, QObject *parent) : QAbstractTableModel(parent)
+DataModel::DataModel(QString baseDir, bool recurse, QObject *parent) : QAbstractItemModel(parent)
 {
 
     rootItem = new DataItem(QString("Root"), nullptr);

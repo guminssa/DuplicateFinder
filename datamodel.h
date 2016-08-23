@@ -2,7 +2,7 @@
 #define DATAMODEL_H
 
 #include <QObject>
-#include <QAbstractTableModel>
+#include <QAbstractItemModel>
 #include <QMessageBox>
 #include <QDebug>
 #include <QThread>
@@ -14,7 +14,7 @@
 #include "dataitem.h"
 #include <exception>
 
-class DataModel : public QAbstractTableModel
+class DataModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
