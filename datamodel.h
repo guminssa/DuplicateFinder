@@ -43,7 +43,7 @@ public:
 
     // Data manipulation
     bool addPath(QString &baseDir, bool recurse, DataItem *parent);
-    bool pathAlreadyAdded(const QString &path);
+    bool pathAlreadyAdded(const QString &);
     void debugDuplicates(); // Display duplicate files
     void dumpFiles();
 

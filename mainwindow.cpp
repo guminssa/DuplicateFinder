@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->treeView->setModel((QAbstractItemModel *) model);
 
+
 #if 0
     // Tree views display all rows and columns that are children of the root index, and looks like a table
     ui->treeView->setModel((QAbstractItemModel *) model);

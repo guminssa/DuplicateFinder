@@ -142,10 +142,10 @@ QModelIndex DataModel::index(int row, int column,
     {
         // Get the DataItem that represents the child directory
         requestedItem = parentItem->dirChildren->value(row);
-        row -= dirCount;
     }
     else
     {
+        row -= dirCount;
         if ( row < fileCount && parentItem->fileChildren != nullptr )
         {
             requestedItem = parentItem->fileChildren->value(row);
@@ -169,7 +169,15 @@ QModelIndex DataModel::index(int row, int column,
     }
 
     if ( !requestedItem->modelIndex.isValid() )
-        requestedItem->modelIndex = createIndex(row+1,column, (void *) requestedItem);
+    {
+        requestedItem->modelIndex = createIndex(row,column, (void *) requestedItem);
+        if ( !requestedItem->modelIndex.isValid() )
+        {
+            QMessageBox msg(QMessageBox::NoIcon, "Alert", "createIndex generated invalid index");
+            msg.exec();
+            requestedItem->modelIndex = createIndex(row,column, (void *) requestedItem);
+        }
+    }
     // For some reason, createIndex is generating invalid indicies
     // (i.e. the row numbers are negative)
     qDebug() << " Returning new QModelIndex " << requestedItem->modelIndex <<
@@ -249,7 +257,7 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
         default:
             return QVariant();
     }
-        return QVariant(); // TODO
+    return QVariant(); // TODO
 }
 
 
@@ -357,8 +365,9 @@ DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
 // TODO: This is a very simple implemenation that will cause errors if there are
 // directories higher in the hierarchy that have the same name but one has additional
 // characters.  For example, /home/steve and /home/steveG would cause problems.
-bool DataModel::pathAlreadyAdded(const QString &path)
+bool DataModel::pathAlreadyAdded(const QString &/*path*/)
 {
+#if 0
     int count = 1;
     if ( rootItem->dirChildren == nullptr )
     {
@@ -379,6 +388,7 @@ bool DataModel::pathAlreadyAdded(const QString &path)
             return true;
         }
     }
+#endif
     return false;
 }
 
