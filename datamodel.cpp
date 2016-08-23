@@ -8,7 +8,7 @@
 
 DataModel::DataModel(QObject *parent) : QAbstractTableModel(parent)
 {
-    rootItem = new DataItem(QString(""), nullptr);
+    rootItem = new DataItem(QString("Root"), nullptr);
     // TODO: Create model index
     rootItem->modelIndex = QModelIndex();
 }
@@ -17,10 +17,10 @@ DataModel::DataModel(QObject *parent) : QAbstractTableModel(parent)
 DataModel::DataModel(QString baseDir, bool recurse, QObject *parent) : QAbstractTableModel(parent)
 {
 
-    rootItem = new DataItem(QString(""), nullptr);
+    rootItem = new DataItem(QString("Root"), nullptr);
     rootItem->modelIndex = QModelIndex();
 
-    addPath(baseDir, recurse);
+    addPath(baseDir, recurse, rootItem);
 }
 
 
@@ -33,50 +33,54 @@ DataModel::~DataModel()
 
 //******************************************************************
 //
-// Constructors/destructors
+// Qt Model interface
 //
 //******************************************************************
 
-int DataModel::rowCount(const QModelIndex &/*parent*/) const
+int DataModel::rowCount(const QModelIndex &parent) const
 {
-#if 0
-    DataItem *item = DataModel::itemFromIndex(parent);
+    DataItem *item;
+    int rc=0;
 
-    if ( item == 0 )
+    qDebug() << "rowCount(" << parent << ")";
+    if ( !parent.isValid() )
     {
-        return 0;
+        item = rootItem;
+    }
+    else
+    {
+        item = (DataItem *) parent.internalPointer();
+        qDebug() << " Item = " << item;
+        if (item->fileInfo != nullptr && item->fileInfo->isFile())
+        {
+            qDebug() << "Returning 0";
+            return 0;
+        }
     }
 
-    return item->fileChildren->size() + item->dirChildren->size(); // TODO: This is private
-#endif
-    return 0;
-}
-
-
-int DataModel::columnCount(const QModelIndex &/*parent*/) const
-{
-#if 0
-    DataItem *item = DataModel::itemFromIndex(parent);
-
-    if ( item == 0 )
+    if ( item->fileChildren != nullptr )
     {
-        return 0;
+        rc += item->fileChildren->size();
+    }
+    if ( item->dirChildren != nullptr)
+    {
+        rc += item->dirChildren->size();
     }
 
-    return 1;
-#endif
-    return 1;
+    qDebug() << "Returning " << rc;
+    return rc;
 }
 
 
-#if 0
-static DataItem *DataModel::itemFromIndex(const QModelIndex &index)
+int DataModel::columnCount(const QModelIndex &parent) const
 {
-    if ( index == QModelIndex() )
-        return nullptr;
-    return (DataItem *) index.internalId();
+    qDebug() << "columnCount(" << parent << ")";
+    if ( parent.isValid() )
+        qDebug() << " Item = " << parent.internalPointer();
+    qDebug() << "columnCount returning 1";
+    return 1;
 }
-#endif
+
 
 
 /*
@@ -100,31 +104,6 @@ Qt::ItemFlags DataModel::flags(const QModelIndex & index) const
 */
 
 
-#if 0
-QVariant DataModel::data(const QModelIndex & index, int role) const
-{
-    // Apparently, the index parameter is always marked as invalid
-    DataItem *item = itemFromIndex(parent);
-    switch (role)
-    {
-        case (Qt::DisplayRole):
-            return item->path; // TODO: This is private
-            break;
-        default:
-            return QVariant(); // No data
-    }
-
-}
-
-
-
-QModelIndex parent(const QModelIndex &index) const Q_DECL_OVERRIDE
-{
-    return QModelIndex(); // TODO
-}
-#endif
-
-
 // Returns the Model Index for the specified data item.  This function is called by
 // the View object to generate a Model Index.
 //
@@ -134,43 +113,143 @@ QModelIndex DataModel::index(int row, int column,
                   const QModelIndex &parent) const
 {
     DataItem *parentItem, *requestedItem;
+    int dirCount=0;
+    int fileCount=0;
 
+
+    qDebug() << "index(" << row << ", " << column << ", " << parent << ")";
     if ( !parent.isValid() )
+    {
+        qDebug() << "ParentIndex is rootItem";
         parentItem = rootItem;
+    }
     else
+    {
+        qDebug() << "ParentIndex is NOT rootItem, pointer=" << parent.internalPointer()
+                 << ", id=" << parent.internalId();
         parentItem = (DataItem *) parent.internalPointer();
+        qDebug() << "ParentIndex = " << parentItem->path;
+    }
+
+    if ( parentItem->dirChildren != nullptr )
+        dirCount = parentItem->dirChildren->count();
+    if ( parentItem->fileChildren != nullptr )
+        fileCount = parentItem->fileChildren->count();
 
     // The model represents the child directories as the first set of rows,
     // followed by the child files
-    int dirCount = parentItem->dirChildren->count();
-    int fileCount = parentItem->fileChildren->count();
-    if ( row < dirCount )
+
+    if ( row < dirCount && parentItem->dirChildren != nullptr )
     {
         // Get the DataItem that represents the child directory
-        requestedItem = parentItem->dirChildren->at(row);
+        requestedItem = parentItem->dirChildren->value(row);
+        row -= dirCount;
     }
     else
     {
-        row -= dirCount;
-        if ( row >= fileCount ) // Return an invalid QModelIndex to indicate
-            return QModelIndex(); //  that there is no data at this row
-        requestedItem = parentItem->fileChildren->at(row);
+        if ( row < fileCount && parentItem->fileChildren != nullptr )
+        {
+            requestedItem = parentItem->fileChildren->value(row);
+        }
+        else
+        {
+            qDebug() << "Item does not exist, return invalid index (remaining rows="
+                     << row << ")";
+            return QModelIndex();
+        }
+    }
+
+    if ( requestedItem == nullptr )
+    {
+        qDebug() << "requestedItem = null";
+        return QModelIndex();
+    }
+    else
+    {
+        qDebug() << "requestedItem is " << requestedItem->path;
     }
 
     if ( !requestedItem->modelIndex.isValid() )
-        requestedItem->modelIndex = createIndex(row,column, requestedItem);
+        requestedItem->modelIndex = createIndex(row+1,column, (void *) requestedItem);
+    // For some reason, createIndex is generating invalid indicies
+    // (i.e. the row numbers are negative)
+    qDebug() << " Returning new QModelIndex " << requestedItem->modelIndex <<
+                " for item " << requestedItem;
+    qDebug() << " internalPointer=" << requestedItem->modelIndex.internalPointer() <<
+                " internalID=" << requestedItem->modelIndex.internalId();
     return requestedItem->modelIndex;
 }
 
-
-
-QModelIndex DataModel::parent(QModelIndex const&) const
+QVariant DataModel::headerData(int section, Qt::Orientation /*orientation*/, int role) const
 {
-    return QModelIndex(); // TODO
+    switch (role)
+    {
+        case Qt::DisplayRole:
+            if ( section == 0 )
+                return QVariant("Header");
+            else
+                return QVariant();
+            break;
+        default:
+            return QVariant();
+    }
 }
 
-QVariant DataModel::data(QModelIndex const& /*index*/, int /*role = Qt::DisplayRole*/) const
+QModelIndex DataModel::parent(const QModelIndex &child) const
 {
+    DataItem *childItem, *parentItem;
+
+    qDebug() << "childItem";
+    if ( !child.isValid() ) // The root item has no parent
+        return QModelIndex();
+
+    childItem = (DataItem *) child.internalPointer();
+    if ( childItem == nullptr) // This should never happen.
+        return QModelIndex();
+
+    parentItem = childItem->parentItem;
+    if ( parentItem == nullptr) // This should never happen.
+        return QModelIndex();
+
+    return parentItem->modelIndex;
+}
+
+QVariant DataModel::data(const QModelIndex &index, int role) const
+{
+    // Qt::DisplayRole
+    DataItem *item;
+    qDebug() << "data(" << index << ") start, role=" << role;
+    if ( !index.isValid() )
+        item = rootItem;
+    else
+        item = (DataItem *) index.internalPointer();
+
+    switch (role)
+    {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+        case Qt::ToolTipRole:
+        case Qt::StatusTipRole:
+        case Qt::WhatsThisRole:
+            if ( item == rootItem )
+            {
+                qDebug() << "DisplayRole requested for rootItem.  Returning Root";
+                return QVariant("Root"); // Nothing to display
+            }
+            else
+            {
+                qDebug() << "DisplayRole requested.  Returning " << item->path;
+                return QVariant(item->path);
+            }
+        break;
+        /*
+        case Qt::DecorationRole:
+            if ( item->fileInfo->isDir() )
+                return QVariant(Qt::QIcon)
+        */
+        default:
+            return QVariant();
+    }
         return QVariant(); // TODO
 }
 
@@ -203,7 +282,10 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
     }
 
     if ( pathAlreadyAdded(baseDir) )
+    {
+        qDebug() << baseDir << " was previously added.  Skipping.";
         return true;
+    }
 
 
     // Create new DataItem to represent the specified baseDir
@@ -238,6 +320,8 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
 DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
 {
     if ( parent == nullptr ) { parent = rootItem; }
+    if ( parent == rootItem ) { qDebug() << "Parent is rootItem"; }
+    else { qDebug() << "Parent is not rootItem"; }
 
     DataItem *newItem = new DataItem(path, parent);
     //newItem->modelIndex = createIndex(0, 0, newItem);
@@ -322,3 +406,42 @@ void DataModel::debugDuplicates()
     }
 }
 
+void DataModel::dumpFiles()
+{
+    DataItem *item = rootItem;
+    DataItem *childItem;
+    //QVector<DataItem *> vector;
+    QVector<DataItem *>::iterator it;
+
+    qDebug() << "dumpFiles start";
+    if ( item->dirChildren != nullptr )
+    {
+        qDebug() << "rootItem has " << item->dirChildren->count() << " child dirs";
+        //vector = *(item->dirChildren);
+        for ( it = item->dirChildren->begin(); it != item->dirChildren->end(); it++)
+        {
+            childItem = (DataItem *) (*it);
+            if ( childItem != nullptr )
+                qDebug() << "Child dir: " << childItem->path;
+            else
+                qDebug() << "rootItem child dir is null";
+        }
+    }
+
+    if ( item->fileChildren != nullptr )
+    {
+        qDebug() << "rootItem has " << item->fileChildren->count() << " child files";
+        //vector = *(item->dirChildren);
+        for ( it = item->fileChildren->begin(); it != item->fileChildren->end(); it++)
+        {
+            childItem = (DataItem *) (*it);
+            if ( childItem != nullptr )
+                qDebug() << childItem->path;
+        }
+    }
+    else
+    {
+        qDebug() << "rootItem has no file children";
+    }
+    qDebug() << "dumpFiles end";
+}

@@ -10,6 +10,7 @@
 #include <QCryptographicHash>
 #include <QMultiMap>
 #include <QDebug>
+#include <QTextStream>
 #include "dataitem.h"
 #include <exception>
 
@@ -31,8 +32,9 @@ public:
     QModelIndex index(int row, int column,
                       const QModelIndex &parent) const;
 
-    QModelIndex parent(QModelIndex const&) const;
+    QModelIndex parent(const QModelIndex &child) const;
     static DataItem *itemFromIndex(const QModelIndex &index);
+    QVariant headerData(int section, Qt::Orientation, int role = Qt::DisplayRole) const;
     // For editing
     //bool setData(const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
     //Qt::ItemFlags flags(const QModelIndex & index) const;
@@ -40,9 +42,10 @@ public:
 
 
     // Data manipulation
-    bool addPath(QString &baseDir, bool recurse, DataItem *parent=nullptr);
+    bool addPath(QString &baseDir, bool recurse, DataItem *parent);
     bool pathAlreadyAdded(const QString &path);
     void debugDuplicates(); // Display duplicate files
+    void dumpFiles();
 
 
 

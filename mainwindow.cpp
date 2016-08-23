@@ -1,17 +1,22 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <QFileSystemModel>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    //QModelIndex indexA, indexB, indexBChild, rootIndex;
-    //bool rc;
-    DataModel model(QString("/home/steve/testdata"), true);
-    //DataModel model(QString("/media/pix/pix/Scifi/cons/DragonCon2013"), true);
-    model.debugDuplicates();
+    DataModel *model = new DataModel(QString("/home/steve/testdata"), true);
+    //DataModel *model = new DataModel(QString("/media/pix/pix/Scifi/cons/DragonCon2013"), true);
+    //model.debugDuplicates();
+    //QFileSystemModel *model = new QFileSystemModel;
+    //model->setRootPath(QDir::currentPath());
+    model->dumpFiles();
+
 
     ui->setupUi(this);
+
+    ui->treeView->setModel((QAbstractItemModel *) model);
 
 #if 0
     // Tree views display all rows and columns that are children of the root index, and looks like a table

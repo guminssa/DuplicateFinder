@@ -13,7 +13,7 @@
 #include <QModelIndex>
 #include <exception>
 
-#define DEFAULT_TOP_LEVEL_DIR_COUNT 5
+#define DEFAULT_TOP_LEVEL_DIR_COUNT 3
 
 class DataItem
 {
