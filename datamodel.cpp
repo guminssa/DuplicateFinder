@@ -41,7 +41,7 @@ int DataModel::rowCount(const QModelIndex &parent) const
     DataItem *item;
     int rc=0;
 
-    qDebug() << "rowCount(" << parent << ")";
+
     if ( !parent.isValid() )
     {
         item = rootItem;
@@ -49,11 +49,11 @@ int DataModel::rowCount(const QModelIndex &parent) const
     else
     {
         item = (DataItem *) parent.internalPointer();
-        qDebug() << " Item = " << item;
+        //qDebug() << " Item = " << item;
         if (item->fileInfo != nullptr && item->fileInfo->isFile())
         {
-            qDebug() << "Returning 0";
-            return 0;
+            qDebug() << "rowCount(" << parent << ") returning " << rc;
+            return rc;
         }
     }
 
@@ -66,17 +66,20 @@ int DataModel::rowCount(const QModelIndex &parent) const
         rc += item->dirChildren->size();
     }
 
-    qDebug() << "Returning " << rc;
+    if ( parent.isValid() )
+        qDebug() << "rowCount(" << parent << ") returning " << rc;
     return rc;
 }
 
 
 int DataModel::columnCount(const QModelIndex &parent) const
 {
-    qDebug() << "columnCount(" << parent << ")";
+    /*
     if ( parent.isValid() )
         qDebug() << " Item = " << parent.internalPointer();
-    qDebug() << "columnCount returning 1";
+    */
+    if ( parent.isValid() )
+        qDebug() << "columnCount(" << parent << ") returning 1";
     return 1;
 }
 
@@ -114,20 +117,23 @@ QModelIndex DataModel::index(int row, int column,
     DataItem *parentItem, *requestedItem;
     int dirCount=0;
     int fileCount=0;
+    int childIndex = 0;
 
 
     qDebug() << "index(" << row << ", " << column << ", " << parent << ")";
     if ( !parent.isValid() )
     {
-        qDebug() << "ParentIndex is rootItem";
+        //qDebug() << "ParentIndex is rootItem";
         parentItem = rootItem;
     }
     else
     {
+        /*
         qDebug() << "ParentIndex is NOT rootItem, pointer=" << parent.internalPointer()
                  << ", id=" << parent.internalId();
+        */
         parentItem = (DataItem *) parent.internalPointer();
-        qDebug() << "ParentIndex = " << parentItem->path;
+        //qDebug() << "ParentIndex = " << parentItem->path;
     }
 
     if ( parentItem->dirChildren != nullptr )
@@ -138,52 +144,58 @@ QModelIndex DataModel::index(int row, int column,
     // The model represents the child directories as the first set of rows,
     // followed by the child files
 
-    if ( row < dirCount && parentItem->dirChildren != nullptr )
+    childIndex = row;
+    if ( childIndex < dirCount && parentItem->dirChildren != nullptr )
     {
         // Get the DataItem that represents the child directory
-        requestedItem = parentItem->dirChildren->value(row);
+        requestedItem = parentItem->dirChildren->value(childIndex);
     }
     else
     {
-        row -= dirCount;
-        if ( row < fileCount && parentItem->fileChildren != nullptr )
+        childIndex -= dirCount;
+        if ( childIndex < fileCount && parentItem->fileChildren != nullptr )
         {
-            requestedItem = parentItem->fileChildren->value(row);
+            requestedItem = parentItem->fileChildren->value(childIndex);
         }
         else
         {
             qDebug() << "Item does not exist, return invalid index (remaining rows="
-                     << row << ")";
+                     << childIndex << ")";
             return QModelIndex();
         }
     }
 
     if ( requestedItem == nullptr )
     {
-        qDebug() << "requestedItem = null";
+        //qDebug() << "requestedItem = null";
         return QModelIndex();
     }
+    /*
     else
     {
         qDebug() << "requestedItem is " << requestedItem->path;
     }
+    */
 
     if ( !requestedItem->modelIndex.isValid() )
     {
         requestedItem->modelIndex = createIndex(row,column, (void *) requestedItem);
-        if ( !requestedItem->modelIndex.isValid() )
-        {
-            QMessageBox msg(QMessageBox::NoIcon, "Alert", "createIndex generated invalid index");
-            msg.exec();
-            requestedItem->modelIndex = createIndex(row,column, (void *) requestedItem);
-        }
+    }
+    if ( requestedItem->modelIndex.row() != row )
+    {
+        QMessageBox msg(QMessageBox::NoIcon, "Alert",
+            "createIndex mismatch for " + requestedItem->path + ": row " + requestedItem->modelIndex.row() + "does not match requested row " + row);
+        msg.exec();
+        requestedItem->modelIndex = createIndex(row,column, (void *) requestedItem);
     }
     // For some reason, createIndex is generating invalid indicies
     // (i.e. the row numbers are negative)
     qDebug() << " Returning new QModelIndex " << requestedItem->modelIndex <<
-                " for item " << requestedItem;
+                " for item " << requestedItem << " " << requestedItem->path;
+    /*
     qDebug() << " internalPointer=" << requestedItem->modelIndex.internalPointer() <<
                 " internalID=" << requestedItem->modelIndex.internalId();
+    */
     return requestedItem->modelIndex;
 }
 
@@ -206,7 +218,7 @@ QModelIndex DataModel::parent(const QModelIndex &child) const
 {
     DataItem *childItem, *parentItem;
 
-    qDebug() << "childItem";
+    //qDebug() << "childItem";
     if ( !child.isValid() ) // The root item has no parent
         return QModelIndex();
 
@@ -225,7 +237,8 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
 {
     // Qt::DisplayRole
     DataItem *item;
-    qDebug() << "data(" << index << ") start, role=" << role;
+    if ( role == Qt::DisplayRole || role == Qt::ToolTipRole )
+        qDebug() << "data(" << index << ") start, role=" << role;
     if ( !index.isValid() )
         item = rootItem;
     else
@@ -234,18 +247,19 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
     switch (role)
     {
         case Qt::DisplayRole:
-        case Qt::EditRole:
+        //case Qt::EditRole:
         case Qt::ToolTipRole:
-        case Qt::StatusTipRole:
-        case Qt::WhatsThisRole:
+        //case Qt::StatusTipRole:
+        //case Qt::WhatsThisRole:
             if ( item == rootItem )
             {
-                qDebug() << "DisplayRole requested for rootItem.  Returning Root";
+                //qDebug() << "DisplayRole requested for rootItem.  Returning Root";
                 return QVariant("Root"); // Nothing to display
             }
             else
             {
-                qDebug() << "DisplayRole requested.  Returning " << item->path;
+                if ( role == Qt::DisplayRole || role == Qt::ToolTipRole )
+                    qDebug() << "  Returning " << item->path;
                 return QVariant(item->path);
             }
         break;
@@ -327,8 +341,10 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
 DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
 {
     if ( parent == nullptr ) { parent = rootItem; }
+    /*
     if ( parent == rootItem ) { qDebug() << "Parent is rootItem"; }
     else { qDebug() << "Parent is not rootItem"; }
+    */
 
     DataItem *newItem = new DataItem(path, parent);
     //newItem->modelIndex = createIndex(0, 0, newItem);

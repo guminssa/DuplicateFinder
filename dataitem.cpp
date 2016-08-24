@@ -6,7 +6,7 @@ DataItem::DataItem(const QString &filePath, DataItem *parent)
 
     path = filePath;
 
-    qDebug() << "Creating new DataItem for " << filePath;
+    //qDebug() << "Creating new DataItem for " << filePath;
 
     // The item with a parent set to nullptr is the root item, which doesn't actually map
     // to a file or directory
@@ -28,8 +28,10 @@ DataItem::DataItem(const QString &filePath, DataItem *parent)
         {
             // New item is a directory
             dirInfo = new QDir(path); // Get information about child files and dirs
+            /*
             qDebug() << path << " is a dir with " << numDirChildren() << " dirs and "
                      << numFileChildren() << " files.";
+            */
             //dirChildren = new QVector<DataItem *>(numDirChildren(), nullptr);
             //fileChildren = new QVector<DataItem *>(numFileChildren(), nullptr);
             dirChildren = new QVector<DataItem *>();
@@ -52,7 +54,7 @@ DataItem::DataItem(const QString &filePath, DataItem *parent)
     {
         // We don't know how many top-level directories the user is going to want to examine, so
         // just reserve space for several
-        qDebug() << "Parent is null, this should be the root item";
+        //qDebug() << "Parent is null, this should be the root item";
         //dirChildren = new QVector<DataItem *>(DEFAULT_TOP_LEVEL_DIR_COUNT, nullptr);
         dirChildren = new QVector<DataItem *>();
         fileChildren = nullptr;
@@ -73,7 +75,7 @@ bool DataItem::addChildItem(DataItem *child)
 
     if ( child->fileInfo->isDir() )
     {
-        qDebug() << "Adding " << child->path << " as a child dir of " << this->path;
+        //qDebug() << "Adding " << child->path << " as a child dir of " << this->path;
         if ( dirChildren == nullptr )
         {
             qDebug() << "dirChildren is null.  This must not be!!!";
@@ -89,7 +91,7 @@ bool DataItem::addChildItem(DataItem *child)
         }
         if ( !fileChildren->contains(child))
         {
-            qDebug() << "Adding " << child->path << " as a child file of " << this->path;
+            //qDebug() << "Adding " << child->path << " as a child file of " << this->path;
             fileChildren->append(child);
         }
     }

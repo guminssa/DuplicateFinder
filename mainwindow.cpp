@@ -11,7 +11,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //model.debugDuplicates();
     //QFileSystemModel *model = new QFileSystemModel;
     //model->setRootPath(QDir::currentPath());
-    model->dumpFiles();
+
+    //model->dumpFiles();
 
 
     ui->setupUi(this);
