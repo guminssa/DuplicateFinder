@@ -17,9 +17,9 @@
    <widget class="QTreeView" name="treeView">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>30</y>
-      <width>511</width>
+      <x>5</x>
+      <y>320</y>
+      <width>500</width>
       <height>271</height>
      </rect>
     </property>
@@ -27,8 +27,8 @@
    <widget class="QListView" name="listView">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>350</y>
+      <x>510</x>
+      <y>320</y>
       <width>256</width>
       <height>192</height>
      </rect>
@@ -37,73 +37,63 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>81</width>
+      <x>5</x>
+      <y>300</y>
+      <width>150</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>TreeView:</string>
+     <string>Scanned directories:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>330</y>
-      <width>67</width>
+      <x>510</x>
+      <y>300</y>
+      <width>80</width>
       <height>17</height>
      </rect>
     </property>
     <property name="text">
-     <string>ListView:</string>
+     <string>Duplicates:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>320</y>
-      <width>91</width>
-      <height>21</height>
+      <x>5</x>
+      <y>0</y>
+      <width>100</width>
+      <height>15</height>
      </rect>
     </property>
     <property name="text">
-     <string>TableView:</string>
+     <string>Path to scan:</string>
     </property>
    </widget>
-   <widget class="QTableView" name="tableView">
+   <widget class="QLineEdit" name="pathEdit">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>350</y>
-      <width>551</width>
-      <height>301</height>
+      <x>5</x>
+      <y>20</y>
+      <width>450</width>
+      <height>25</height>
      </rect>
     </property>
    </widget>
-   <widget class="QColumnView" name="columnView">
+   <widget class="QPushButton" name="addButton">
     <property name="geometry">
      <rect>
-      <x>600</x>
-      <y>60</y>
-      <width>401</width>
-      <height>251</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>600</x>
-      <y>30</y>
-      <width>91</width>
-      <height>21</height>
+      <x>5</x>
+      <y>50</y>
+      <width>99</width>
+      <height>25</height>
      </rect>
     </property>
     <property name="text">
-     <string>ColumnView:</string>
+     <string>Add</string>
     </property>
    </widget>
   </widget>

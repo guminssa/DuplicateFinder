@@ -6,12 +6,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-    DataModel *model = new DataModel(QString("/home/steve/testdata"), true);
-    //DataModel *model = new DataModel(QString("/media/pix/pix/Scifi/cons/DragonCon2013"), true);
-    //model.debugDuplicates();
-    //QFileSystemModel *model = new QFileSystemModel;
-    //model->setRootPath(QDir::currentPath());
-
+    //model = new DataModel(QString("/home/steve/testdata"), true);
+    model = new DataModel();
+    //model->addPath("/home/steve/testdata", true, nullptr);
     //model->dumpFiles();
 
 
@@ -38,4 +35,15 @@ MainWindow::MainWindow(QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_pathEdit_returnPressed()
+{
+    model->addPath(ui->pathEdit->text(), true, 0);
+    //ui->treeView->reset();
+}
+
+void MainWindow::on_addButton_clicked()
+{
+    model->addPath(ui->pathEdit->text(), true, 0);
 }

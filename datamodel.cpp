@@ -292,7 +292,7 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
 
 
 
-bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
+bool DataModel::addPath(const QString &baseDir, bool recurse, DataItem *parent)
 {
     QFileInfo file(baseDir);
 
@@ -338,8 +338,9 @@ bool DataModel::addPath(QString &baseDir, bool recurse, DataItem *parent)
 }
 
 
-DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
+DataItem *DataModel::createDataItem(const QString &path, DataItem *parent)
 {
+    int newRow=0;
     if ( parent == nullptr ) { parent = rootItem; }
     /*
     if ( parent == rootItem ) { qDebug() << "Parent is rootItem"; }
@@ -347,6 +348,19 @@ DataItem *DataModel::createDataItem(QString &path, DataItem *parent)
     */
 
     DataItem *newItem = new DataItem(path, parent);
+    if ( newItem->fileInfo != nullptr )
+    {
+        if ( newItem->fileInfo->isDir() )
+        {
+            newRow = parent->dirChildren->count();
+        }
+        else
+        {
+            newRow = parent->dirChildren->count() + parent->fileChildren->count();
+        }
+        this->beginInsertRows(parent->modelIndex, newRow, newRow);
+        this->endInsertRows();
+    }
     //newItem->modelIndex = createIndex(0, 0, newItem);
 
     // TODO: Create a ModelIndex

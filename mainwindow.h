@@ -19,6 +19,11 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void on_pathEdit_returnPressed();
+
+    void on_addButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     //QStandardItemModel *model;

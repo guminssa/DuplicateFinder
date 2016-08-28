@@ -42,7 +42,7 @@ public:
 
 
     // Data manipulation
-    bool addPath(QString &baseDir, bool recurse, DataItem *parent);
+    bool addPath(const QString &baseDir, bool recurse, DataItem *parent);
     bool pathAlreadyAdded(const QString &);
     void debugDuplicates(); // Display duplicate files
     void dumpFiles();
@@ -54,7 +54,7 @@ public:
 private:
     DataItem *rootItem;
     QMultiMap<QString, DataItem *> hashes;
-    DataItem *createDataItem(QString &path, DataItem *parent=nullptr);
+    DataItem *createDataItem(const QString &path, DataItem *parent=nullptr);
 };
 
 #endif // DATAMODEL_H
