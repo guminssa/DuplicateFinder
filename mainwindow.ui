@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>5</x>
-      <y>320</y>
-      <width>500</width>
-      <height>271</height>
+      <y>100</y>
+      <width>750</width>
+      <height>250</height>
      </rect>
     </property>
    </widget>
@@ -28,9 +28,9 @@
     <property name="geometry">
      <rect>
       <x>5</x>
-      <y>300</y>
+      <y>80</y>
       <width>150</width>
-      <height>16</height>
+      <height>15</height>
      </rect>
     </property>
     <property name="text">
@@ -40,10 +40,10 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>300</y>
+      <x>5</x>
+      <y>355</y>
       <width>80</width>
-      <height>17</height>
+      <height>15</height>
      </rect>
     </property>
     <property name="text">
@@ -89,10 +89,10 @@
    <widget class="QListWidget" name="duplicateList">
     <property name="geometry">
      <rect>
-      <x>510</x>
-      <y>320</y>
-      <width>400</width>
-      <height>271</height>
+      <x>5</x>
+      <y>375</y>
+      <width>750</width>
+      <height>200</height>
      </rect>
     </property>
    </widget>

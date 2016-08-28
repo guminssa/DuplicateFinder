@@ -263,11 +263,15 @@ QVariant DataModel::data(const QModelIndex &index, int role) const
                 return QVariant(item->path);
             }
         break;
-        /*
-        case Qt::DecorationRole:
-            if ( item->fileInfo->isDir() )
-                return QVariant(Qt::QIcon)
-        */
+
+        case Qt::FontRole:
+            if ( (item->duplicateFiles != nullptr && item->duplicateFiles->count() > 0) ||
+                 (item->similarDirs != nullptr && item->similarDirs->count() > 0))
+            {
+                return QVariant(QFont("Helvetica", 12, QFont::ExtraBold, true));
+            }
+            return QVariant(QFont("Helvetica", 12, -1, false));
+        break;
         default:
             return QVariant();
     }

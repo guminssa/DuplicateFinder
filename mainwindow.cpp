@@ -52,6 +52,27 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
 {
     ui->duplicateList->clear();
 
+    ui->duplicateList->addItems(model->listDuplicates(index));
+}
+
+void MainWindow::on_treeView_entered(const QModelIndex &index)
+{
+    ui->duplicateList->clear();
+
+    ui->duplicateList->addItems(model->listDuplicates(index));
+}
+
+void MainWindow::on_treeView_activated(const QModelIndex &index)
+{
+    ui->duplicateList->clear();
+
+    ui->duplicateList->addItems(model->listDuplicates(index));
+}
+
+
+void MainWindow::on_treeView_pressed(const QModelIndex &index)
+{
+    ui->duplicateList->clear();
 
     ui->duplicateList->addItems(model->listDuplicates(index));
 }
