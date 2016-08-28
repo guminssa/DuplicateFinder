@@ -24,16 +24,6 @@
      </rect>
     </property>
    </widget>
-   <widget class="QListView" name="listView">
-    <property name="geometry">
-     <rect>
-      <x>510</x>
-      <y>320</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
@@ -94,6 +84,16 @@
     </property>
     <property name="text">
      <string>Add</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="duplicateList">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>320</y>
+      <width>400</width>
+      <height>271</height>
+     </rect>
     </property>
    </widget>
   </widget>

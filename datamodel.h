@@ -46,6 +46,7 @@ public:
     bool pathAlreadyAdded(const QString &);
     void debugDuplicates(); // Display duplicate files
     void dumpFiles();
+    const QStringList &listDuplicates(const QModelIndex &modelIndex);
 
 
 
@@ -55,6 +56,7 @@ private:
     DataItem *rootItem;
     QMultiMap<QString, DataItem *> hashes;
     DataItem *createDataItem(const QString &path, DataItem *parent=nullptr);
+    QStringList duplicateList;
 };
 
 #endif // DATAMODEL_H

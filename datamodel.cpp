@@ -484,3 +484,30 @@ void DataModel::dumpFiles()
     }
     qDebug() << "dumpFiles end";
 }
+
+
+const QStringList &DataModel::listDuplicates(const QModelIndex &modelIndex)
+{
+    QList<DataItem *>::iterator it;
+    DataItem *dataItem = (DataItem *) modelIndex.internalPointer();
+
+    duplicateList.clear();
+
+    if ( dataItem == nullptr || dataItem->fileInfo == nullptr ) { return duplicateList; }
+
+    if (  dataItem->fileInfo->isFile() && dataItem->duplicateFiles != nullptr )
+    {
+        for ( it=dataItem->duplicateFiles->begin(); it!=dataItem->duplicateFiles->end(); it++)
+        {
+            duplicateList.append((*it)->path);
+        }
+    }
+    else if (  dataItem->fileInfo->isDir() && dataItem->similarDirs != nullptr )
+    {
+        for ( it=dataItem->similarDirs->begin(); it!=dataItem->similarDirs->end(); it++)
+        {
+            duplicateList.append((*it)->path);
+        }
+    }
+    return duplicateList;
+}

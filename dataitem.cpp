@@ -131,6 +131,12 @@ bool DataItem::setModelIndex(const QModelIndex &index)
 }
 #endif
 
+const QList<DataItem *> &DataItem::listDuplicates()
+{
+    return *(this->duplicateFiles);
+}
+
+
 
 bool DataItem::addSimilarDir(DataItem *otherItem)
 {

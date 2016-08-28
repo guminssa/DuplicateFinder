@@ -11,6 +11,7 @@
 #include <QException>
 #include <QDebug>
 #include <QModelIndex>
+#include <QStringList>
 #include <exception>
 
 #define DEFAULT_TOP_LEVEL_DIR_COUNT 3
@@ -30,7 +31,7 @@ public:
     QString &getHash();
     const QList<DataItem *> *getSimilarDirs(); // Other dirs that contain duplicates of the files in this item
     bool addSimilarDir(DataItem *otherItem);
-    QStringList &listDuplicates(const QString &path); // List all files in path that are duplicates of this item's files
+    const QList<DataItem *> &listDuplicates(); // List all files in path that are duplicates of this item's files
     bool markDuplicate(DataItem *otherItem);
     bool addChildItem(DataItem *child);
 

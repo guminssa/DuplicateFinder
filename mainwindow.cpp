@@ -47,3 +47,11 @@ void MainWindow::on_addButton_clicked()
 {
     model->addPath(ui->pathEdit->text(), true, 0);
 }
+
+void MainWindow::on_treeView_clicked(const QModelIndex &index)
+{
+    ui->duplicateList->clear();
+
+
+    ui->duplicateList->addItems(model->listDuplicates(index));
+}
