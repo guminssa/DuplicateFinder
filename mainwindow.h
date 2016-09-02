@@ -32,6 +32,8 @@ private slots:
 
     void on_treeView_pressed(const QModelIndex &index);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     //QStandardItemModel *model;

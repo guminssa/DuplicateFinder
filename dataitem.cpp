@@ -50,7 +50,7 @@ DataItem::DataItem(const QString &filePath, DataItem *parent)
 
         parentItem->addChildItem(this);
     }
-    else
+    else  // This is the rootItem
     {
         // We don't know how many top-level directories the user is going to want to examine, so
         // just reserve space for several
@@ -67,10 +67,16 @@ DataItem::DataItem(const QString &filePath, DataItem *parent)
     qDebug() << "Created new DataItem for path " + path + ".";
 }
 
+DataItem::~DataItem()
+{
+
+}
+
+
 
 bool DataItem::addChildItem(DataItem *child)
 {
-    if ( /*fileInfo == nullptr || !fileInfo->isDir() ||*/ child == nullptr || child->fileInfo == nullptr )
+    if ( child == nullptr || child->fileInfo == nullptr )
         { qDebug() << "Cannot add child item"; return false; }
 
     if ( child->fileInfo->isDir() )
@@ -99,6 +105,33 @@ bool DataItem::addChildItem(DataItem *child)
 
     child->parentItem = this;
     return true;  // Child item was added to either the dirChildren or the fileChildren list
+}
+
+bool DataItem::removeFromParent()
+{
+    int i;
+    if ( fileInfo == nullptr || parentItem == nullptr ) { return true; }
+
+    if ( fileInfo->isDir() )
+    {
+        if ( parentItem->dirChildren != nullptr )
+        {
+            i = parentItem->dirChildren->indexOf(this);
+            if ( i!= -1 )
+                parentItem->dirChildren->remove(i);
+        }
+    }
+    else
+    {
+        if ( parentItem->fileChildren != nullptr )
+        {
+            i = parentItem->fileChildren->indexOf(this);
+            if ( i!= -1 )
+                parentItem->fileChildren->remove(i);
+        }
+    }
+    parentItem = nullptr;
+    return true;
 }
 
 
@@ -134,6 +167,57 @@ bool DataItem::setModelIndex(const QModelIndex &index)
 const QList<DataItem *> &DataItem::listDuplicates()
 {
     return *(this->duplicateFiles);
+}
+
+bool DataItem::removeFromDuplicates(bool removeList)
+{
+    QList<DataItem *>::iterator it;
+    DataItem *duplicate = nullptr;
+    int i;
+
+    if ( fileInfo == nullptr ) { return false; }
+
+    if ( fileInfo->isDir() )
+    {
+        for ( it=similarDirs->begin(); it!=similarDirs->end(); it++)
+        {
+            duplicate = *it;
+            if ( duplicate == nullptr || duplicate->similarDirs == nullptr ) continue;
+            i  = duplicate->similarDirs->indexOf(this);
+            if ( i!= -1 )
+                duplicate->similarDirs->removeAt(i);
+            i  = similarDirs->indexOf(duplicate);
+            if ( i!= -1 )
+                similarDirs->removeAt(i);
+        }
+        if ( removeList )
+        {
+            delete similarDirs;
+            similarDirs = nullptr;
+        }
+    }
+    else
+    {
+        for ( it=duplicateFiles->begin(); it!=duplicateFiles->end(); it++)
+        {
+            duplicate = *it;
+            if ( duplicate == nullptr || duplicate->duplicateFiles == nullptr ) continue;
+
+            i  = duplicate->duplicateFiles->indexOf(this);
+            if ( i!= -1 )
+                duplicate->duplicateFiles->removeAt(i);
+            i  = duplicateFiles->indexOf(duplicate);
+            if ( i!= -1 )
+                duplicateFiles->removeAt(i);
+        }
+        if ( removeList )
+        {
+            delete duplicateFiles;
+            duplicateFiles = nullptr;
+        }
+    }
+
+    return true;
 }
 
 

@@ -21,6 +21,7 @@ class DataItem
 public:
     // Constructors/destructors
     DataItem(const QString &filePath, DataItem *parent);
+    ~DataItem();
 
 
     // Qt Model interface
@@ -34,6 +35,8 @@ public:
     const QList<DataItem *> &listDuplicates(); // List all files in path that are duplicates of this item's files
     bool markDuplicate(DataItem *otherItem);
     bool addChildItem(DataItem *child);
+    bool removeFromParent();
+    bool removeFromDuplicates(bool removeList);
 
 
 

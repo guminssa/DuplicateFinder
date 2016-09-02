@@ -76,3 +76,12 @@ void MainWindow::on_treeView_pressed(const QModelIndex &index)
 
     ui->duplicateList->addItems(model->listDuplicates(index));
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    // Determine which duplicates have been selected
+
+    // For each selection, call a function in the model that deletes a file
+    // based on the ModelIndex of the file to be kept and the filename of
+    // the selection
+}
